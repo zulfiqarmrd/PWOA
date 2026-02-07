@@ -1,0 +1,1144 @@
+package org.cloudbus.cloudsim.examples.Algorithms;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import org.cloudbus.cloudsim.Cloudlet;
+import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
+import org.cloudbus.cloudsim.Datacenter;
+import org.cloudbus.cloudsim.DatacenterBroker;
+import org.cloudbus.cloudsim.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.Host;
+import org.cloudbus.cloudsim.Log;
+import org.cloudbus.cloudsim.Pe;
+import org.cloudbus.cloudsim.Storage;
+import org.cloudbus.cloudsim.UtilizationModel;
+import org.cloudbus.cloudsim.UtilizationModelFull;
+import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.VmAllocationPolicySimple;
+import org.cloudbus.cloudsim.VmSchedulerTimeShared;
+import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
+public class GAMR {
+	private static String category = "GoCJ";
+	private static int subCategory = 100;
+	private static int noOfChromosomes = 60;	// 52 according to point 13.
+	private static int maxItr = 220;
+
+	private static HashMap<Cloudlet, Vm> gbFMap = new HashMap<>();	
+	private static List<Cloudlet> cloudletList;
+	private static List<Vm> vmlist;
+
+	private static List<Vm> createGocjVm(int userId, int vms, int idShift) {
+		//Creates a container to store VMs. This list is passed to the broker later
+		LinkedList<Vm> list = new LinkedList<Vm>();
+
+		//VM Parameters
+		long size = 10000; 	//image size (MB)
+		int ram = 512; 		//vm memory (MB) 
+		int mips = 400;		// keeps changing in the lower code
+		long bw = 1000;		//fix for all vms
+		int pesNumber = 1; 	//number of cpus
+		String vmm = "Xen"; //VMM name
+
+		//create VMs
+		Vm[] vm = new Vm[10];
+
+		vm[0] = new Vm(idShift + 0, userId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+		list.add(vm[0]);
+		Log.printLine("VM #0 configured with mips_"+mips);
+		
+		vm[1] = new Vm(idShift + 1, userId, 440, pesNumber, 560, bw, size, vmm, new CloudletSchedulerTimeShared());
+		list.add(vm[1]);
+		Log.printLine("VM #1 configured with mips_440");
+		
+		vm[2] = new Vm(idShift + 2, userId, 600, pesNumber, 720, bw, size, vmm, new CloudletSchedulerTimeShared());
+		list.add(vm[2]);
+		Log.printLine("VM #2 configured with mips_600");
+		
+		vm[3] = new Vm(idShift + 3, userId, 800, pesNumber, 960, bw, size, vmm, new CloudletSchedulerTimeShared());
+		list.add(vm[3]);
+		Log.printLine("VM #3 configured with mips_800");
+		
+		vm[4] = new Vm(idShift + 4, userId, 900, pesNumber, 1088, bw, size, vmm, new CloudletSchedulerTimeShared());
+		list.add(vm[4]);
+		Log.printLine("VM #4 configured with mips_900");
+		
+		vm[5] = new Vm(idShift + 5, userId, 1200, pesNumber, 1440, bw, size, vmm, new CloudletSchedulerTimeShared());
+		list.add(vm[5]);
+		Log.printLine("VM #5 configured with mips_1200");
+
+		vm[6] = new Vm(idShift + 6, userId, 2000, pesNumber, 2384, bw, size, vmm, new CloudletSchedulerTimeShared());
+		list.add(vm[6]);
+		Log.printLine("VM #6 configured with mips_2000");
+		
+		vm[7] = new Vm(idShift + 7, userId, 4000, pesNumber, 4768, bw, size, vmm, new CloudletSchedulerTimeShared());
+		list.add(vm[7]);
+		Log.printLine("VM #7 configured with mips_4000");
+		
+		vm[8] = new Vm(idShift + 8, userId, 10000, pesNumber, 11936, bw, size, vmm, new CloudletSchedulerTimeShared());
+		list.add(vm[8]);
+		Log.printLine("VM #8 configured with mips_10000");
+		
+		vm[9] = new Vm(idShift + 9, userId, 12000, pesNumber, 14336, bw, size, vmm, new CloudletSchedulerTimeShared());
+		list.add(vm[9]);
+		Log.printLine("VM #9 configured with mips_12000");
+		
+		return list;
+	}
+	
+	private static List<Vm> createHcspVM(int userId, int vms, int idShift) {
+		//Creates a container to store VMs. This list is passed to the broker later
+		LinkedList<Vm> list = new LinkedList<Vm>();
+
+		//VM Parameters
+		long size = 10000; 	//image size (MB)
+		int ram = 512; 		//vm memory (MB) 
+		int mips = 0;		// keeps changing in the lower code
+		long bw = 1000;		
+		int pesNumber = 1; 	//number of cpus
+		String vmm = "Xen"; //VMM name
+
+		//create VMs
+		Vm[] vm = new Vm[1024];
+		
+		String fileToRead = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/workload/HCSP/vm_MIPS/VM_"+subCategory+".txt";
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileToRead))) 
+        {
+        	String line;
+        	int i = 0;
+            while ((line = reader.readLine()) != null) 
+            {
+        		mips = Integer.parseInt(line);
+            	vm[i] = new Vm(idShift + i, userId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+            	list.add(vm[i]);
+        		Log.printLine("VM #" + i + " configured with mips_"+mips);
+            	i++;
+            }
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        } 
+		return list;
+	}
+
+	private static List<Vm> createNasaHpc2nVM(int userId, int vms, int idShift) {	//VM Parameters- According to Jaya
+		//Creates a container to store VMs. This list is passed to the broker later
+		LinkedList<Vm> list = new LinkedList<Vm>();
+
+		
+		long size = 10240; 	//image size (MB)
+		int ram = 512; 		//vm memory (MB) 
+		int mips = 500;		// keeps changing in the lower code
+		long bw = 1024;		
+		int pesNumber = 1;	//number of cpus
+		String vmm = "Xen"; //VMM name
+
+		//create VMs
+		Vm[] vm = new Vm[750];	// Jaya has 600 vms but used two test scenarios. I am using only 1 test scenario, so consider 750.
+		
+		for (int i = 0; i < 750; i++) 
+		{
+			if (i >= 0 && i < 50) {mips = 500;}
+			else if (i >= 50 && i < 150) {mips = 1000; ram = ram+48; bw = bw+48;}
+			else if (i >= 150 && i < 300) {mips = 1500; ram = ram+48; bw = bw+48;}
+			else if (i >= 300 && i < 500) {mips = 2000; ram = ram+48; bw = bw+48;}
+			else if (i >= 500 && i < 750) {mips = 2500; ram = ram+48; bw = bw+48;}
+
+    		vm[i] = new Vm(idShift + i, userId, mips, pesNumber, ram, bw, size, vmm, new CloudletSchedulerTimeShared());
+        	list.add(vm[i]);
+//    		System.out.println("VM No. " + i + " created: " + mips);	
+		} //    			mips = 500+(i*(1600-500)/599);	// exact estimation for Jaya
+
+    	return list;
+	}
+	
+	private static List<Cloudlet> createGocjCloudlet(int userId, int cloudlets, int idShift)
+	{
+		// Creates a container to store Cloudlets
+		LinkedList<Cloudlet> list = new LinkedList<Cloudlet>();
+		
+		//cloudlet parameters
+		long length = 0;
+		long fileSize = 300;
+		long outputSize = 300;
+		int pesNumber = 1;
+		UtilizationModel utilizationModel = new UtilizationModelFull();
+
+		Cloudlet[] cloudlet = new Cloudlet[cloudlets];
+		long [] cloudletlengths = new long [subCategory];
+
+		String fileToRead = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/workload/GoCJ/GoCJ_Dataset_"+subCategory+".txt";
+//		System.out.println(fileToRead);
+		
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileToRead))) 
+        {
+        	String line;
+        	int i = 0;
+            while ((line = reader.readLine()) != null) 
+            {
+            	cloudletlengths[i] = Long.parseLong(line);
+    			i++;
+            }
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        } 
+            
+        for (int i=0; i < cloudlets; i++)
+        {
+        	length = cloudletlengths[i];
+        	cloudlet[i] = new Cloudlet(idShift + i, length, pesNumber, fileSize, outputSize, 
+										utilizationModel, utilizationModel, utilizationModel);
+			cloudlet[i].setUserId(userId);
+			list.add(cloudlet[i]);
+        }    
+        return list;
+	}
+
+	private static List<Cloudlet> createHcspCloudlet(int userId, int cloudlets, int idShift)
+	{
+		// Creates a container to store Cloudlets
+		LinkedList<Cloudlet> list = new LinkedList<Cloudlet>();
+		
+		//cloudlet parameters
+		long length = 0;
+		long fileSize = 300;
+		long outputSize = 300;
+		int pesNumber = 1;
+		UtilizationModel utilizationModel = new UtilizationModelFull();
+
+		Cloudlet[] cloudlet = new Cloudlet[cloudlets];
+		long [] cloudletlengths = new long [cloudlets];
+
+		String fileToRead = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/workload/HCSP/cloudlets_MI/Ds_"+subCategory+".txt";
+//		System.out.println(fileToRead);
+		
+		try (BufferedReader reader = new BufferedReader(new FileReader(fileToRead))) 
+        {
+        	String line;
+        	int i = 0;
+            while ((line = reader.readLine()) != null) 
+            {
+            	cloudletlengths[i] = (long)(Float.parseFloat(line));
+//    			System.out.println(cloudletlengths[i]);
+            	i++;
+            }
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        } 
+            
+        for (int i=0; i < cloudlets; i++)
+        {
+        	length = cloudletlengths[i];
+        	cloudlet[i] = new Cloudlet(idShift + i, length, pesNumber, fileSize, outputSize, 
+										utilizationModel, utilizationModel, utilizationModel);
+			cloudlet[i].setUserId(userId);
+			list.add(cloudlet[i]);
+        }    
+        return list;
+        }
+        
+	private static List<Cloudlet> createNasaCloudlet(int userId, int cloudlets, int idShift)
+	{
+        /*The NASA cloudlet creation takes care of the number of PEs (varies from 1 to 128) assigned to any task, so that's why its produced makespan will be much higher
+         * than the algorithms gbest figures that were computed using 1 PE*/
+		
+		List<Cloudlet> list = new LinkedList<Cloudlet>();
+        
+        WorkloadFileReader workloadFileReader = null;
+        														// 1833 across all 400 vms
+        try {													// Earlier it was set as 111861 is the average MIPS across 400 vms
+            workloadFileReader = new WorkloadFileReader(		// 26075 is the average MIPS of each core across 400 hosts
+            		"D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/workload/NASA/NASA_" + subCategory + ".swf", 1, userId);
+        	} catch (FileNotFoundException e) 
+        	{e.printStackTrace();}
+        
+        list = workloadFileReader.generateWorkload();
+        return list;
+	}	
+	
+	private static List<Cloudlet> createHpc2nCloudlet(int userId, int cloudlets, int idShift)
+	{
+        /*The NASA cloudlet creation takes care of the number of PEs (varies from 1 to 128) assigned to any task, so that's why its produced makespan will be much higher
+         * than the algorithms gbest figures that were computed using 1 PE*/
+
+		List<Cloudlet> list = new LinkedList<Cloudlet>();
+        
+        WorkloadFileReader workloadFileReader = null;
+        
+        try {
+            workloadFileReader = new WorkloadFileReader(		
+            		"D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/workload/HPC2N/HPC2N_" + subCategory + ".swf", 1, userId);
+        	} catch (FileNotFoundException e) 
+        	{e.printStackTrace();}
+        
+        list = workloadFileReader.generateWorkload();
+        return list;
+	}	
+
+	/**
+	 * Main method
+     * @param args
+	 */
+	public static void main(String[] args) {
+		Log.printLine("Starting GAMR...");
+
+		try {
+
+			if (args.length > 0) 
+			{
+				category = args[0];
+				
+				if (category == "GoCJ") 
+				{
+					subCategory = Integer.parseInt(args[1]); 
+					noOfChromosomes = Integer.parseInt(args[2]);
+					maxItr = Integer.parseInt(args[3]);
+				}
+				else if (category == "HCSP") 
+				{
+					subCategory = Integer.parseInt(args[1]);
+					noOfChromosomes = Integer.parseInt(args[2]);
+					maxItr = Integer.parseInt(args[3]);
+				}
+				else if (category == "NASA") 
+				{
+					subCategory = Integer.parseInt(args[1]);
+					noOfChromosomes = Integer.parseInt(args[2]);
+					maxItr = Integer.parseInt(args[3]);
+				}
+				else if (category == "HPC2N") 
+				{
+					subCategory = Integer.parseInt(args[1]);
+					noOfChromosomes = Integer.parseInt(args[2]);
+					maxItr = Integer.parseInt(args[3]);
+				}
+			}
+
+			// First step: Initialize the CloudSim package. It should be called
+			// before creating any entities.
+			int num_user = 1;   // number of cloud users
+			Calendar calendar = Calendar.getInstance();
+			boolean trace_flag = false;  // mean trace events
+
+			// Initialize the CloudSim library
+			CloudSim.init(num_user, calendar, trace_flag); // producing output in milliseconds
+
+			// Second step: Create Datacenters
+			//Datacenters are the resource providers in CloudSim. We need at list one of them to run a CloudSim simulation
+			@SuppressWarnings("unused")
+			Datacenter datacenter0 = createDatacenter("Datacenter_0", category);
+//			Datacenter datacenter1 = createDatacenter("Datacenter_1"); //Created for NASA but the program does not use it
+			
+			//Third step: Create Broker
+			DatacenterBroker broker = createBroker();
+			int brokerId = broker.getId();
+
+			//Fourth step: Create VMs and Cloudlets and send them to broker
+			
+			if (category == "GoCJ") 
+			{
+				vmlist = createGocjVm(brokerId, 10, 0); // 10 VMs as given in Parallel random matrix PSO
+				cloudletList = createGocjCloudlet(brokerId, subCategory, 0); // 100-1000 tasks
+			}
+			else if (category == "HCSP") 
+			{
+				vmlist = createHcspVM(brokerId, 32, 0); // 32 VMs
+				cloudletList = createHcspCloudlet(brokerId, 1024, 0); // 1024 tasks
+			}
+			else if (category == "NASA") 
+			{
+				vmlist = createNasaHpc2nVM(brokerId, 750, 0); // 750 VMs
+				cloudletList = createNasaCloudlet(brokerId, 5000, 0); // A total of 500-5000 tasks
+			}
+			else if (category == "HPC2N") 
+			{
+				vmlist = createNasaHpc2nVM(brokerId, 750, 0); // 750 VMs
+				cloudletList = createHpc2nCloudlet(brokerId, 5000, 0); // A total of 500-5000 tasks
+			}
+
+			double gaStartTime = System.currentTimeMillis();
+			
+			// Create a list to contain Cloudlets in sorted order of length
+			List<Cloudlet> sortedCloudletList = new ArrayList<Cloudlet>();
+			for(Cloudlet cloudlet : cloudletList)
+			{ sortedCloudletList.add(cloudlet);}
+
+			// Sort sortedCloudletList based on length in ascending order (Confirmed)
+//			Collections.sort(sortedCloudletList, new Comparator<Cloudlet>()
+//			{
+//				public int compare(Cloudlet c1, Cloudlet c2) 
+//				{ return (int)(c1.getCloudletLength() - c2.getCloudletLength());}
+//			});
+			
+			// Create a list to contain the VMs in sorted order by of mips(descending)(Confirmed)
+			ArrayList<Vm> sortedVmList = new ArrayList<Vm>();		
+			for(Vm vm : vmlist)
+				sortedVmList.add(vm);
+			
+			// Sorting sortedVmList based on mips, descending order			
+//			Collections.sort(sortedVmList, new Comparator<Vm>() {
+//				public int compare(Vm v1, Vm v2) {
+//					return (int)(v2.getMips() - v1.getMips());
+//				}
+//			});
+
+			int numVms = sortedVmList.size();	
+			int numCloudlets = sortedCloudletList.size();
+			
+			 // INITIALISE POPULATION
+			ArrayList<Chromosomes> initialPopulation = initialisePopulation(numCloudlets, numVms, sortedVmList, sortedCloudletList); // Sorted
+			
+			int bestChromosomeIndex = 0;			// denotes the most fit chromosome in the population
+			int secondbestChromosomeIndex = 0;			// denotes the second most fit chromosome in the population
+			double bestChromosomeMakespan = Double.MAX_VALUE;
+		
+			int populationSize = initialPopulation.size();
+			
+			// INITIAL FITNESS CHECK
+			double[] parameters = calculateFitness(initialPopulation, bestChromosomeIndex, secondbestChromosomeIndex, bestChromosomeMakespan, numCloudlets, populationSize);
+			bestChromosomeIndex = (int)parameters[0];
+			secondbestChromosomeIndex = (int)parameters[1];
+			bestChromosomeMakespan = parameters[2];
+
+/*			System.out.println("** Best Makespan after fitness function: "+ bestChromosomeMakespan + 
+					", bestChromosomeIndex: " + bestChromosomeIndex + ", secondbestChromosomeIndex: "+ secondbestChromosomeIndex +"\n");*/
+
+			 /* START PRODUCING GENERATIONS  */
+			for(int itr = 0; itr < maxItr; itr++)	// No. of Iterations is 120 as given on page 6 (second column)-first paragraph
+			{				
+				 // SELECTION AND CROSSOVER
+				if (bestChromosomeIndex != secondbestChromosomeIndex) 	// if indexes are same, then they will cute and paste the same chromosome
+				{ 
+					selectionAndCrossOver(initialPopulation, bestChromosomeIndex, secondbestChromosomeIndex, numCloudlets);
+				}
+				
+				double rangeMin = 0.0f;
+			    double rangeMax = 1.0f;
+			    Random r = new Random();
+				double mutProb = rangeMin + (rangeMax - rangeMin) * r.nextDouble();
+
+				 // MUTATION
+				if(mutProb < 0.7) // Inertia weight is 0.7 as given on page 6 (second column)-first paragraph
+				{
+//					System.out.println("Mutation Performed! Mutation Performed! Mutation Performed! Mutation Performed!");
+					mutation(r, initialPopulation, populationSize, sortedVmList, numCloudlets);
+				}
+				
+				// UPDATE FITNESS CHECK
+				parameters = calculateFitness(initialPopulation, bestChromosomeIndex, secondbestChromosomeIndex, bestChromosomeMakespan, numCloudlets, populationSize);
+				
+				bestChromosomeIndex = (int)parameters[0];
+				secondbestChromosomeIndex = (int)parameters[1];
+				bestChromosomeMakespan = parameters[2];
+				
+/*				System.out.println("*** Best Makespan in Main loop at Iteration: " + itr+ " is: "+ bestChromosomeMakespan + 
+						", bestChromosomeIndex: " + bestChromosomeIndex + ", secondbestChromosomeIndex: "+ secondbestChromosomeIndex +"\n");*/
+			}
+			
+			System.out.println("Final best makespan: " + bestChromosomeMakespan+ "\n" );
+			
+			double gaEndTime = System.currentTimeMillis();
+			double executionTime = gaEndTime-gaStartTime;
+
+/*	This code has been shifted to the calculateFitness() function as the mutation used to change the chromosomes and thats why we get the incorrect state
+	of the bestChromosome as a final maps.
+			 * 		
+			// Store most fit chromosome's genelist
+			ArrayList<Gene> final_Gene_list = new ArrayList<Gene>();
+			final_Gene_list = initialPopulation.get(bestChromosomeIndex).getGeneList();
+		
+  			List<Cloudlet> final_Cloudlet_list = new ArrayList<Cloudlet>();		//for storing final cloudlets in order
+			List<Vm> final_Vm_list = new ArrayList<Vm>();						//for storing final Vms in order
+
+			
+			// Store the most fit cloudlets and Vms into respective lists
+			for(Gene g : final_Gene_list)
+			{
+//				final_Cloudlet_list.add(g.getCloudletFromGene());
+//				final_Vm_list.add(g.getVmFromGene());
+				gbFMap.put(g.getCloudletFromGene(), g.getVmFromGene());
+			}*/
+			
+			// Submit to broker
+			broker.submitVmList(vmlist);				// putting final vm list is also fine in the broker
+			broker.submitCloudletList(cloudletList);	// putting final cloudlet list is also fine in the broker
+														// Then the lower mapping will not be required.
+			// Final Mapping of cloudlets to VMs			
+			for (HashMap.Entry<Cloudlet, Vm> entry : gbFMap.entrySet()) 
+			{
+				Cloudlet fcld = entry.getKey();
+				Vm fvm = entry.getValue();
+				System.out.println("The Cloudelt id and vmId are: "+ fcld.getCloudletId()+ ", " + fvm.getId());
+				broker.bindCloudletToVm(fcld.getCloudletId(), fvm.getId());
+			}
+			
+			System.out.println("-----------------------------------------------------------------");
+
+			// Executing Final Mapping of cloudlets to VMs on consolebindCloudletToVm
+		    for (HashMap.Entry<Cloudlet, Vm> entry : gbFMap.entrySet()) 
+			{
+				long cldLength = entry.getKey().getCloudletLength();
+
+				double vmMips = entry.getValue().getMips(); 
+
+				double exec = cldLength / vmMips;
+				System.out.println("The execution time of cloudlet " + entry.getKey().getCloudletId() + " on vm: " + entry.getValue().getId() + " is: " + exec);
+			}
+			System.out.println("-----------------------------------------------------------------");
+
+			// Start the simulation
+			CloudSim.startSimulation();
+
+			// Final step: Print results when simulation is over
+			List<Cloudlet> newList = broker.getCloudletReceivedList();
+			CloudSim.stopSimulation();
+			printCloudletList(newList);
+			double allTasksRunningTime = 0;
+
+			// Iterate through each cloudlet in the simulation
+			for (Cloudlet tasks : cloudletList) {
+			    // Check if the cloudlet has completed execution
+			    if (tasks.getCloudletStatus() == Cloudlet.SUCCESS) {
+			        // Get the cloudlet's finish time and add it to the total completion time
+			        double finishTime = tasks.getFinishTime();
+			        allTasksRunningTime += finishTime;
+			    }
+			}
+			Log.printLine("\nAll Cloudlets Running Time: " + allTasksRunningTime);
+			
+			Cloudlet cld0 = newList.get(0);						// First cloudlet
+			double minStartTime = cld0.getExecStartTime();
+
+			Cloudlet cldLast= newList.get(newList.size()-1);	// Last cloudlet
+			double maxFinishTime = cldLast.getExecStartTime(); 
+
+			for (Cloudlet cld : cloudletList) 
+			{
+			    if (cld.getExecStartTime() < minStartTime) 
+			    {
+			    	minStartTime = cld.getExecStartTime();
+			    }
+			}
+			for (Cloudlet cld : cloudletList) 
+			{
+			    if (cld.getFinishTime() > maxFinishTime) 
+			    {
+			        maxFinishTime = cld.getFinishTime();
+			    }
+			}
+			
+			Log.printLine("Start time of first executed cloudlet: " + minStartTime + " ms");
+			Log.printLine("Finish time of last executed cloudlet: " + maxFinishTime + " ms\n");
+			double makespan = maxFinishTime-minStartTime;
+			Log.printLine("Makespan of all cloudlets: " + makespan + " ms");
+			Log.printLine("ARU of all VMs: " + avgRU(makespan));	// cloudsim calculated makespan is sent as parameter
+			Log.printLine("Average Response Time of all cloudlets: " + avgRespT() + " ms");
+	    	Log.printLine("Throughput: " + cloudletList.size()/makespan);            	
+	    	Log.printLine("Execution Time: " + executionTime+ " ms"+"\n");            	
+	    	Log.printLine("GAMR finished!");
+	    	
+	    	try
+	    	{
+	    		String fileToWrite = null;
+				
+	    		if (category == "GoCJ") 
+				{
+		    		fileToWrite = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/GoCJ/output_"+ subCategory + ".txt";
+//		    		fileToWrite = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/GoCJ/output_"+ noOfChromosomes + ".txt";
+//		    		fileToWrite = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/GoCJ/output_"+ maxItr + ".txt";
+
+				}
+				else if (category == "HCSP") 
+				{
+		    		fileToWrite = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/HCSP/output_"+ subCategory + ".txt";
+				}
+				else if (category == "NASA") 
+				{
+		    		fileToWrite = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/NASA/output_"+ subCategory + ".txt";
+				}
+				else if (category == "HPC2N") 
+				{
+		    		fileToWrite = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/HPC2N/output_"+ subCategory + ".txt";
+				}
+
+	    		FileWriter fWriter = new FileWriter(fileToWrite,true);
+	    		BufferedWriter bWriter = new BufferedWriter(fWriter);
+	    		bWriter.write(makespan + ", "+ avgRU(makespan)+ ", "+ avgRespT()+", "+ cloudletList.size()/makespan + "," + executionTime + "\n");
+	    		bWriter.close();
+	    		fWriter.close();
+	    	}
+	    	catch(IOException e)
+	    	{
+	    		System.out.println("An error occurred while writing to the file: " + e.getMessage());
+	    	}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			Log.printLine("The simulation has been terminated due to an unexpected error");
+		}
+	}
+	
+	private static double avgRU(double mk) 	// Average Resource Utilization according to OG-RADL eq.(10)
+	{
+		double ARU = 0.0, avgMakespan = 0.0, sum = 0.0;
+		for(Vm vm:vmlist)
+		  {
+			double singleVmMakespan = 0.0;
+			for (int i = 0; i<cloudletList.size(); i++)
+			  {
+				  if (cloudletList.get(i).getVmId() == vm.getId())
+				  {
+					  if(cloudletList.get(i).getFinishTime() > singleVmMakespan)
+					  {
+						  singleVmMakespan = cloudletList.get(i).getFinishTime(); // returns the lastly executed cloudlet by the vm
+					  }
+				  }				  
+			  }
+			  sum = sum + singleVmMakespan; // summing up the finish-times of last cloudlet's execution by all vms
+		  }
+		avgMakespan = sum/vmlist.size();
+		ARU = avgMakespan/mk;
+		return ARU;
+	}	
+
+	private static double avgRespT() 	// Average Response Time of All Tasks (milliseconds) according to OG-RADL eq.(13)
+	{
+		double avgRTAllVms = 0.0, sumAvgRTSingleVms = 0;
+		for(Vm vm:vmlist)
+		{
+			double avgRTSingleVm = 0;
+			int count = 0;
+			for(int i=0; i<cloudletList.size(); i++)
+			{
+				if (cloudletList.get(i).getVmId() == vm.getId())
+				{
+					avgRTSingleVm = avgRTSingleVm + cloudletList.get(i).getExecStartTime();    
+					count++;
+				}
+			}
+			if (avgRTSingleVm!=0 || count!=0)
+			{
+				avgRTSingleVm = avgRTSingleVm/count;
+			}
+			sumAvgRTSingleVms = sumAvgRTSingleVms + avgRTSingleVm;
+		}
+		avgRTAllVms = sumAvgRTSingleVms/vmlist.size();
+		return avgRTAllVms;
+	}	
+
+
+	private static Datacenter createDatacenter(String name, String category)
+	{		
+
+        List<Host> hostList = new ArrayList<>();
+ 
+        if (category == "GoCJ" || category == "HCSP")
+        {
+            /************ GoCJ and HCSP Start *************/
+    		// 2. A Machine contains one or more PEs or CPUs/Cores. Therefore, should
+    		//    create a list to store these PEs before creating
+    		//    a Machine.
+    		List<Pe> peList1 = new ArrayList<Pe>();
+
+    		int mips = 12000;	// the largest vm(9) requirment is 12000 mips.
+    							//  If any of the machine is below 12000, then vm-9 will not be provisioned successfully.
+    		
+    		// 3. Create PEs and add these into the list.
+    		//for a quad-core machine, a list of 4 PEs is required:
+    		peList1.add(new Pe(0, new PeProvisionerSimple(mips))); // need to store Pe id and MIPS Rating
+    		peList1.add(new Pe(1, new PeProvisionerSimple(mips)));
+    		peList1.add(new Pe(2, new PeProvisionerSimple(mips)));
+    		peList1.add(new Pe(3, new PeProvisionerSimple(mips)));
+
+    		//Another list, for a hexa-core machine
+    		List<Pe> peList2 = new ArrayList<Pe>();
+    		peList2.add(new Pe(0, new PeProvisionerSimple(mips)));
+    		peList2.add(new Pe(1, new PeProvisionerSimple(mips)));
+    		peList2.add(new Pe(2, new PeProvisionerSimple(mips)));
+    		peList2.add(new Pe(3, new PeProvisionerSimple(mips)));
+    		peList2.add(new Pe(4, new PeProvisionerSimple(mips)));
+    		peList2.add(new Pe(5, new PeProvisionerSimple(mips)));
+
+    		//Another list, for a octa-core machine
+    		List<Pe> peList3 = new ArrayList<Pe>();
+    		peList3.add(new Pe(0, new PeProvisionerSimple(mips)));
+    		peList3.add(new Pe(1, new PeProvisionerSimple(mips)));
+    		peList3.add(new Pe(2, new PeProvisionerSimple(mips)));
+    		peList3.add(new Pe(3, new PeProvisionerSimple(mips)));
+    		peList3.add(new Pe(4, new PeProvisionerSimple(mips)));
+    		peList3.add(new Pe(5, new PeProvisionerSimple(mips)));
+    		peList3.add(new Pe(6, new PeProvisionerSimple(mips)));
+    		peList3.add(new Pe(7, new PeProvisionerSimple(mips)));
+    		
+    		
+    		//4. Create Hosts with its id and list of PEs and add them to the list of machines
+    		int hostId=0;
+    		int ram = 16896; // If any of the machine's RAM is below 16896, then vm-9 will not be provisioned successfully.
+    		long storage = 1000000; //host storage
+    		int bw = 15000;
+
+    		hostList.add(new Host(hostId, new RamProvisionerSimple(ram), new BwProvisionerSimple(bw),storage, peList1, new VmSchedulerTimeShared(peList1))); // First machine
+
+    		hostId++;
+    		hostList.add(new Host(hostId,new RamProvisionerSimple(ram),new BwProvisionerSimple(bw),storage,peList2,new VmSchedulerTimeShared(peList2))); // Second machine
+    		
+    		hostId++;
+    		hostList.add(new Host(hostId,new RamProvisionerSimple(ram),new BwProvisionerSimple(bw),storage,peList3,new VmSchedulerTimeShared(peList3))); // Third machine
+    		
+    		 /****************End ****************/
+        
+        }else if (category == "NASA" || category == "HPC2N" ) 		// Datacenter for NASA according to Jaya with minor modifications
+        {
+            /********** NASA and HPC2N Start **********/
+            int numHosts = 400;
+            int ram = 51200;		// 51200 to 204800 according to Jaya
+            long storage = 1048576;
+            int bw = 1020400;
+            int mips = 25079;
+            int cores= 0;
+               
+            for (int i = 0; i < numHosts; i++) 
+            {
+                List<Pe> peList = new ArrayList<>();
+                
+                if (i >= 0 && i < 80) {cores = 2;}
+                else if (i >= 80 && i < 160) {cores = 3;}
+                else if(i >= 160 && i < 240) {cores = 4;}
+                else if(i >= 240 && i < 320) {cores = 5;}
+                else if(i >= 320 && i < 400) {cores = 6;}
+                
+                for (int j = 0; j < cores; j++) 
+                {
+                    if (i==0) {mips = 25079;} else {mips = mips+435;}
+                    peList.add(new Pe(j, new PeProvisionerSimple(mips)));
+                }
+
+                // Creating the Host object and adding it to hostList
+                int hostId = i;
+                
+                if (i == 0){ ram = 51200;} 
+                else if (i == 399) {ram = 204800;}
+                else {ram = ram+385;}
+                
+                hostList.add(new Host(hostId, new RamProvisionerSimple(ram),
+                        		new BwProvisionerSimple(bw), storage, peList, new VmSchedulerTimeShared(peList)));
+            }
+            /****************End ****************/
+        }
+
+		String arch = "x86";      			// system architecture
+		String os = "Linux";          // operating system
+		String vmm = "Xen";
+		double time_zone = 10.0;         // time zone this resource located
+		double cost = 3.0;              // the cost of using processing in this resource
+		double costPerMem = 0.05;		// the cost of using memory in this resource
+		double costPerStorage = 0.1;	// the cost of using storage in this resource
+		double costPerBw = 0.1;			// the cost of using bw in this resource
+		LinkedList<Storage> storageList = new LinkedList<Storage>();	//we are not adding SAN devices by now
+		
+		DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
+                arch, os, vmm, hostList, time_zone, cost, costPerMem, costPerStorage, costPerBw);
+		
+		// 6. Finally, we need to create a PowerDatacenter object.
+		Datacenter datacenter = null;
+		try {
+			datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+	
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		Log.printLine(datacenter.getName());
+
+		return datacenter;
+	}
+
+	//We strongly encourage users to develop their own broker policies, to submit vms and cloudlets according
+	//to the specific rules of the simulated scenario
+	private static DatacenterBroker createBroker(){
+
+		DatacenterBroker broker = null;
+		try {
+			broker = new DatacenterBroker("Broker");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+		return broker;
+	}
+
+	/**
+	 * Prints the Cloudlet objects
+	 * @param list  list of Cloudlets
+	 */
+	private static void printCloudletList(List<Cloudlet> list) {
+		int size = list.size();
+		Cloudlet cloudlet;
+
+		String indent = "    ";
+		Log.printLine();
+		Log.printLine("========== OUTPUT ==========");
+		Log.printLine("Cloudlet ID" + indent + "STATUS" + indent +
+				"Data center ID" + indent + "VM ID" + indent + "Time" + indent + "Start Time" + indent + "Finish Time");
+
+		DecimalFormat dft = new DecimalFormat("###.##");
+		
+		for (int i = 0; i < size; i++) {
+			cloudlet = list.get(i);
+			Log.print(indent + cloudlet.getCloudletId() + indent + indent);
+
+			if (cloudlet.getCloudletStatus() == Cloudlet.SUCCESS){
+				Log.print("SUCCESS");
+
+				Log.printLine( indent + indent + cloudlet.getResourceId() + indent + indent + indent + cloudlet.getVmId() +
+						indent + indent + dft.format(cloudlet.getActualCPUTime()) + indent + indent + dft.format(cloudlet.getExecStartTime())+
+						indent + indent + dft.format(cloudlet.getFinishTime()));
+			}
+		}
+	}
+	
+	/**
+	 * Creates a list of Chromosomes. Each chromosomes contains a list of Genes.
+	 * Each gene contains = {Cloudlet, Vm}
+	 * No. of genes in a genelist = numCloudlets
+	 * No. of chromosomes in population = numCloudlets
+	 * 
+	 * @param numCloudlets - number of cloudlets
+	 * @param numVms - number of vms
+	 * @param sortedVmList - a list of sorted Vms
+	 * @param sortedCloudletList - a list of sorted Cloudlets
+	 * 
+	 * @return an ArrayList of Chromosomes
+	 */
+	public static ArrayList<Chromosomes> initialisePopulation(int numCloudlets, int numVms, ArrayList<Vm> sortedVmList, List<Cloudlet> sortedCloudletList) 
+	{
+		
+		ArrayList<Chromosomes> initialPopulation = new ArrayList<Chromosomes>();
+		
+		for(int j = 0; j < noOfChromosomes; j++) 		/* Population size is 50 as given on page 6 (second column)-first paragraph, but according to point 13, 
+																											 it needs to be equally divided by 4.*/ 
+		{
+			ArrayList<Gene> firstChromosome = new ArrayList<Gene>();
+			
+			Random rand = new Random();
+			for(int i = 0; i < numCloudlets; i++){
+				
+/*				int k = (i + j) % numVms;
+				k = (k + numCloudlets) % numCloudlets;     // ensures the vm not to exceed the max number of vms*/
+				int k = rand.nextInt(vmlist.size());		// The random function produces better results than the above approach		
+				
+				// j-th chromosome's gene list will start with j-th vm from the sortedVmList.
+				Gene geneObj = new Gene(sortedCloudletList.get(i), sortedVmList.get(k));
+				
+				firstChromosome.add(geneObj);		// cloudletList.size() determines the number of geneObj in a chromosome.
+			}
+			
+			Chromosomes chromosome = new Chromosomes(firstChromosome);
+			initialPopulation.add(chromosome);		// add chromosome to population
+		}
+		return initialPopulation;
+	}
+
+	/**
+	 * Calculates fitness of every chromosome in the population based on the genes of that chromosome.
+	 * Assigns fit index to those genelist in which total time taken by all Cloudlets to process on a Vm is the least.
+	 * 
+	 * @param initialPopulation	- list of chromosomes
+	 * @param firstFitIndex - index denoting most fit chromosome
+	 * @param secondFitIndex - index denoting second most fit chromosome
+	 * @param time - upper bound of total process time
+	 * @param numCloudlets - number of cloudlets
+	 * @param populationSize - number of chromosomes in the population
+	 * 
+	 * @return an array of parameters
+	 */
+	public static double[] calculateFitness(ArrayList<Chromosomes> initialPopulation, int bestChromosomeIndex , int secondbestChromosomeIndex,
+							double bestChromosomeMakespan, int numCloudlets, int populationSize) 
+	{
+		int noOfChromosomes = populationSize;
+		for(int i = 0; i < noOfChromosomes; i++)
+		{
+			ArrayList<Gene> l = new ArrayList<Gene>();	
+			l = initialPopulation.get(i).getGeneList(); // get the i-th chromosome's gene list as the population has multiple chromosomes
+														// getGeneList() is a method of chromosomes class
+			double best1ChromosomeMakespan = 0.0;
+
+			HashMap<Integer, Double> VMRTMap = new HashMap<>();
+			for (Vm vm:vmlist) { VMRTMap.put(vm.getId(), 0.0); }
+
+			//for every gene in genelist
+			for(int j = 0; j < numCloudlets; j++)
+			{
+				Gene g = l.get(j);
+				Cloudlet c = g.getCloudletFromGene();
+				Vm vm = g.getVmFromGene();
+				double execTime = c.getCloudletLength()/vm.getMips();
+				updateUpVMRTMap(VMRTMap, vm, execTime);
+//				System.out.println("Execution Time of Cloudlet: " + c.getCloudletId() + " on vm " + vm.getId()+" is: " + execTime + " chromosome No. "+i);
+			}
+
+			best1ChromosomeMakespan = getpbMap(VMRTMap);
+/*			System.out.println("Accumulated bestChromosomeMakespan: " + best1ChromosomeMakespan + " in chromosome: "+ i);
+			System.out.println("---------------------------------------------------");*/
+			
+			//if bestChromosomeMakespan of this i-th chromosome is the least, then mark it the fittest
+			if(best1ChromosomeMakespan < bestChromosomeMakespan)
+			{
+//				System.out.println("Previous best chromosome's bestChromosomeMakespan: " + bestChromosomeMakespan);
+				bestChromosomeMakespan = best1ChromosomeMakespan;
+				
+				ArrayList<Gene> final_Gene_list = l;
+				for(Gene g : final_Gene_list)
+				{
+					gbFMap.put(g.getCloudletFromGene(), g.getVmFromGene());
+				}
+				
+				secondbestChromosomeIndex = bestChromosomeIndex ;
+				bestChromosomeIndex  = i;
+/*				System.out.println("*New best chromosome inside fitness: " + i + " with bestChromosomeMakespan: " + best1ChromosomeMakespan+ " with bestChromosomeIndex : "+bestChromosomeIndex  + " secondbestChromosomeIndex: "+secondbestChromosomeIndex+"\n");
+				System.out.println("-----------------------------------------------------------------------");*/
+}
+		}
+		
+		return new double[] {bestChromosomeIndex , secondbestChromosomeIndex, bestChromosomeMakespan};
+	}
+	
+	private static double getpbMap(HashMap<Integer, Double> VMRTMap) 	// Returns the busiest VM -- It is also a fitness function
+	{
+		double busyVm = 0.0;
+		
+		for (HashMap.Entry<Integer, Double> entry : VMRTMap.entrySet()) 
+		{
+			double vmRt = entry.getValue();
+			
+			if (vmRt > busyVm)
+	        {
+				busyVm = vmRt; 
+	        }
+	    }
+//		System.out.println("The pBest of particle is: "+ busyVm);
+		return busyVm;
+	}	
+
+	
+	private static void updateUpVMRTMap(HashMap<Integer, Double> vmRemMap, Vm VM, double execTime) 
+	{
+		int vmid = VM.getId();
+		double prevLoad = 0.0;
+		
+		if (vmRemMap.containsKey(vmid))
+		{
+			prevLoad = vmRemMap.get(vmid);
+		}
+		else 
+		{
+			System.out.println("vmid is not found in updateUpVMRTMap \n");
+		}
+		
+		double totalLoad = prevLoad + execTime;
+//		System.out.println("Put new load: "+execTime+ "|Current Load: " + totalLoad + "\n");
+
+		vmRemMap.put(vmid, totalLoad);
+	}
+
+	/**
+	 * Selects the first and second, most fit Chromosomes and cross-breeds them.
+	 * 
+	 * @param initialPopulation - list of chromosomes
+	 * @param firstFitIndex - index denoting most fit chromosome
+	 * @param secondFitIndex - index denoting second most fit chromosome
+	 * @param numCloudlets - number of cloudlets
+	 */
+	public static void selectionAndCrossOver(ArrayList<Chromosomes> initialPopulation, int firstFitIndex, int secondFitIndex,
+										int numCloudlets) {
+		// SELECTION
+		int index1,index2;			
+		index1 = firstFitIndex;
+		index2 = secondFitIndex;
+		
+		// Store their chromosomes and genelists
+		ArrayList<Gene> l1 = new ArrayList<Gene>();
+		l1 = initialPopulation.get(index1).getGeneList();
+		Chromosomes chromosome1 = new Chromosomes(l1);		// best chromosome
+		
+		ArrayList<Gene> l2 = new ArrayList<Gene>();
+		l2 = initialPopulation.get(index2).getGeneList();
+		Chromosomes chromosome2 = new Chromosomes(l2);		// secondBest chromosome
+		
+		// CROSSOVER			
+		Random random = new Random();
+		int swap_index_limit;
+		swap_index_limit = random.nextInt(numCloudlets) % numCloudlets;	// generate a random point of division in a chromosome
+
+		// Swap VMs among two genelist
+		for(int j = 0; j <= swap_index_limit; j++) 
+		{
+			Vm vm1 = l1.get(j).getVmFromGene();
+			Vm vm2 = l2.get(j).getVmFromGene();
+			// Update the two chromosomes
+			chromosome1.updateGene(j, vm2);	
+			chromosome2.updateGene(j, vm1);	
+		}
+		
+		// Update population
+		initialPopulation.set(index1, chromosome1);		// son
+		initialPopulation.set(index2, chromosome2);		// daughter
+	}
+	
+	/**
+	 * Mutates a random Chromosome by replacing a random VM by the VM with most mips.
+	 * 
+	 * @param rand - an object of class Random
+	 * @param initialPopulation - list of chromosomes
+	 * @param populationSize - number of chromosomes in the population
+	 * @param sortedVmList - a list of sorted Vms
+	 * @param numCloudlets - number of cloudlets
+	 */
+	public static void mutation(Random rand, ArrayList<Chromosomes> initialPopulation, int populationSize, ArrayList<Vm> sortedVmList, int numCloudlets) 
+	{
+		int m = rand.nextInt(populationSize);
+		
+		// Mutation Chromosome
+		ArrayList<Gene> l = new ArrayList<Gene>();
+		l = initialPopulation.get(m).getGeneList();			// l is a random chromosome
+		Chromosomes mutchromosome = new Chromosomes(l);	
+
+		int randGeneIndex1 = rand.nextInt(l.size());
+		int randGeneIndex2 = rand.nextInt(l.size());
+		
+		ArrayList<Gene> allGenes = mutchromosome.getGeneList();
+
+		Gene gene1 = allGenes.get(randGeneIndex1);
+		Gene gene2 = allGenes.get(randGeneIndex2);
+		
+		int cldId1 = gene1.getCloudletFromGene().getCloudletId();
+//		System.out.println("The old cldId1 is: "+cldId1);
+		cldId1 = cldId1%numCloudlets;	/* The modulus operator with numCloudlets keeps the cldId into the range noOfCloudlets. 
+										It is important because in the raw files, the rows are randomly taken having huge 
+											cloudlet ids.*/
+//		System.out.println("The new cldId1 is: "+cldId1+"\n");
+		Vm vm1 = gene1.getVmFromGene();
+
+		int cldId2 = gene2.getCloudletFromGene().getCloudletId();
+//		System.out.println("The old cldId2 is: "+cldId2);
+
+		cldId2 = cldId2%numCloudlets;
+//		System.out.print("The new cldId2 is: "+ cldId2 + "\n");
+
+		Vm vm2 = gene2.getVmFromGene();
+		
+		mutchromosome.updateGene(cldId1, vm2);		
+		mutchromosome.updateGene(cldId2, vm1);		
+	}
+} // End of Genetic Algorithm
+
+class Gene {
+	
+	/** Task to be performed */
+	private Cloudlet task;
+	
+	/** VM to run a task */
+	private Vm vm;
+	
+	/**
+	 * Create a new Gene object.
+	 * @param cl - cloudlet
+	 * @param v - virtual machine
+	 */
+	public Gene(Cloudlet cl, Vm v)
+	{
+		this.task = cl;
+		this.vm = v;
+	}
+	
+	/**
+	 * Getter method for Cloudlet
+	 * @return Cloudlet
+	 */
+	public Cloudlet getCloudletFromGene()
+	{
+		return this.task;
+	}
+	
+	/**
+	 * Getter method for Vm
+	 * @return Vm
+	 */
+	public Vm getVmFromGene()
+	{
+		return this.vm;
+	}
+	
+	/**
+	 * Setter method for cloudlet
+	 * @param cl - cloudlet
+	 */
+	public void setCloudletForGene(Cloudlet cl)
+	{
+		this.task = cl;
+	}
+	
+	/**
+	 * Setter method for Vm
+	 * @param vm
+	 */
+	public void setVmForGene(Vm vm)
+	{
+		this.vm = vm;
+	}
+}
+
+class Chromosomes {
+	
+	/** A list of Gene object */
+	protected ArrayList<Gene> geneList;
+	
+	/**
+	 * Create a new Chromosome.
+	 * @param geneList
+	 */
+	public Chromosomes(ArrayList<Gene> geneList){
+		this.geneList = geneList;		
+	}
+	
+	/**
+	 * Getter method for Gene list.
+	 * @return array - list of genes
+	 */
+	public ArrayList<Gene> getGeneList(){
+		return this.geneList;
+	}
+	
+	/**
+	 * For replacing a Vm with a new one at an index.
+	 * @param index - index at which to update the Vm
+	 * @param vm - new Vm
+	 */
+	public void updateGene(int index, Vm vm)
+	{
+		Gene gene = this.geneList.get(index);
+		gene.setVmForGene(vm);
+		this.geneList.set(index, gene);
+	
+	}
+}

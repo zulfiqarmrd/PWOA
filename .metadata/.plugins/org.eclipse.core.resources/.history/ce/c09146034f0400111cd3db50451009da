@@ -1,0 +1,155 @@
+/*
+ * Title:        CloudSim Toolkit
+ * Description:  CloudSim (Cloud Simulation) Toolkit for Modeling and Simulation
+ *               of Clouds
+ * Licence:      GPL - http://www.gnu.org/copyleft/gpl.html
+ *
+ * Copyright (c) 2009, The University of Melbourne, Australia
+ */
+
+
+package org.cloudbus.cloudsim.examples.Algorithms;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import org.cloudbus.cloudsim.Cloudlet;
+import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
+import org.cloudbus.cloudsim.Datacenter;
+import org.cloudbus.cloudsim.DatacenterBroker;
+import org.cloudbus.cloudsim.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.Host;
+import org.cloudbus.cloudsim.Log;
+import org.cloudbus.cloudsim.Pe;
+import org.cloudbus.cloudsim.Storage;
+import org.cloudbus.cloudsim.UtilizationModel;
+import org.cloudbus.cloudsim.UtilizationModelFull;
+import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.VmAllocationPolicySimple;
+import org.cloudbus.cloudsim.VmSchedulerTimeShared;
+import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.SimEntity;
+import org.cloudbus.cloudsim.core.SimEvent;
+import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
+
+public class Agents_Report_GoCJ 
+{
+	
+	public static void main(String[] args) 
+	{
+		computeAverage("RMPSO");
+		computeAverage("MRMPSO");
+		computeAverage("SAEA");
+		computeAverage("GAMR");
+		computeAverage("PWOA");
+
+//		Graphs_GoCJ_Algorithms.main(args);
+	}	
+	
+	public static void computeAverage(String algo) 
+	{
+		int tasks = 1000;
+		int agents = 30;
+		String read = null;
+		String write = null;
+		
+		while (agents < 101)
+		{
+			
+			if (algo == "RMPSO")
+			{
+				read = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/RMPSO/GoCJ/output_" + agents+".txt"; 
+				write = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/RMPSO/GoCJ/RMPSO_GoCJ_Output.txt";
+			}
+			else if (algo == "MRMPSO")
+			{
+				read = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/MRMPSO/GoCJ/output_" + agents+".txt"; 
+				write = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/MRMPSO/GoCJ/MRMPSO_GoCJ_Output.txt";
+			}
+			else if (algo == "SAEA")
+			{
+				read = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/SAEA/GoCJ/output_" + agents+".txt"; 
+				write = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/SAEA/GoCJ/SAEA_GoCJ_Output.txt";
+			}
+			else if (algo == "GAMR")
+			{
+				read = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/GoCJ/output_" + agents+".txt"; 
+				write = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/GoCJ/GAMR_GoCJ_Output.txt";
+			}
+			else if(algo == "PWOA") 
+			{
+				read = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/PWOA/GoCJ/output_" + agents+".txt"; 
+				write = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/PWOA/GoCJ/PWOA_GoCJ_Output.txt";
+			}
+
+			String fileToRead = read; 
+			try (BufferedReader br = new BufferedReader(new FileReader(fileToRead))) 
+			{
+		        String line;
+		        double avgMakespan = 0.0;
+		        double avgARU = 0.0;
+		        double avgaRT = 0.0;
+		        double avgthroughput = 0.0;
+		        double avgExecutionTime = 0.0;
+		        
+		        while ((line = br.readLine()) != null) 
+		        {
+		            // Split the line into individual values using the comma as the delimiter
+		            String[] values = line.split(",");
+
+		            // Process the values as needed
+		            Double makespan = Double.parseDouble(values[0]);
+		            Double ARU = Double.parseDouble(values[1]);
+		            Double aRT = Double.parseDouble(values[2]);
+		            Double throughput = Double.parseDouble(values[3]);
+		            Double executionTime = Double.parseDouble(values[4]);
+
+		            avgMakespan = avgMakespan + makespan;
+		            avgARU = avgARU + ARU;
+		            avgaRT = avgaRT + aRT;
+		            avgthroughput = avgthroughput + throughput;
+		            avgExecutionTime = avgExecutionTime + executionTime;
+		        }
+		        System.out.println("The results are for length:"+tasks);
+		        System.out.println("Average makespan: " + avgMakespan/10);
+		        System.out.println("Average ARU: " + avgARU/10);
+		        System.out.println("Average aRT: " + avgaRT/10);
+		        System.out.println("Average throughput: " + avgthroughput/10);
+		        System.out.println("Average executionTime: " + avgExecutionTime/10+"\n");
+
+				try
+		    	{	// The first row contains the result for 100 tasks while the last row represents 1000 tasks average.
+		    		String fileToWrite = write;
+		    		FileWriter fWriter = new FileWriter(fileToWrite,true);
+		    		BufferedWriter bWriter = new BufferedWriter(fWriter);
+		    		bWriter.write(avgMakespan/10 + ", "+ avgARU/10+ ", "+ avgaRT/10+", "+ avgthroughput/10 +", "+ avgExecutionTime/10 + "\n");
+		    		bWriter.close();
+		    		fWriter.close();
+		    	}
+		    	catch(IOException e)
+		    	{
+		    		System.out.println("An error occurred while writing to the file: " + e.getMessage());
+		    	}
+
+	       	   	agents = agents+10;
+			
+			} catch (IOException e) 
+			{
+				e.printStackTrace();
+			}
+		}
+		String[] args = {"dummy"};
+		Agents_Graphs_GoCJ_Algorithms.main(args);
+	}
+}
+
+

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy element &apos;Graphs_GoCJ_Algorithms_SVG.java&apos; to &apos;org.cloudbus.cloudsim.examples.Parallelization_Paper.Graphs_GoCJ_Algorithms_SVG.java&apos;&#x0D;&#x0A;- Original project: &apos;newPWhale&apos;&#x0D;&#x0A;- Destination element: &apos;org.cloudbus.cloudsim.examples.Parallelization_Paper.Graphs_GoCJ_Algorithms_SVG.java&apos;&#x0D;&#x0A;- Original element: &apos;org.cloudbus.cloudsim.examples.Parallelization_Paper.Graphs_GoCJ_Algorithms_SVG.java&apos;" description="Copy compilation unit" destination="/examples&lt;org.cloudbus.cloudsim.examples.Parallelization_Paper{Graphs_GoCJ_Algorithms_SVG.java" element1="/examples&lt;org.cloudbus.cloudsim.examples.Parallelization_Paper{Graphs_GoCJ_Algorithms_SVG.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1705820153705" units="1" version="1.0"/>
+</session>

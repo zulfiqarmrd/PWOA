@@ -1,0 +1,88 @@
+/*
+ * Title:        CloudSim Toolkit
+ * Description:  CloudSim (Cloud Simulation) Toolkit for Modeling and Simulation
+ *               of Clouds
+ * Licence:      GPL - http://www.gnu.org/copyleft/gpl.html
+ *
+ * Copyright (c) 2009, The University of Melbourne, Australia
+ */
+
+
+package org.cloudbus.cloudsim.examples.Algorithms;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import org.cloudbus.cloudsim.Cloudlet;
+import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
+import org.cloudbus.cloudsim.Datacenter;
+import org.cloudbus.cloudsim.DatacenterBroker;
+import org.cloudbus.cloudsim.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.Host;
+import org.cloudbus.cloudsim.Log;
+import org.cloudbus.cloudsim.Pe;
+import org.cloudbus.cloudsim.Storage;
+import org.cloudbus.cloudsim.UtilizationModel;
+import org.cloudbus.cloudsim.UtilizationModelFull;
+import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.VmAllocationPolicySimple;
+import org.cloudbus.cloudsim.VmSchedulerTimeShared;
+import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.SimEntity;
+import org.cloudbus.cloudsim.core.SimEvent;
+import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
+
+public class Run 
+{
+	
+	public static void main(String[] args) 
+	{
+		String category = "GoCJ";
+		int subCategory = 100;
+		int agents = 60;
+		int iterations = 220;
+
+		while (subCategory < 1001) 
+		{
+			for (int i = 0; i < 10; i++) 
+			{
+				String[] args1 = { category, Integer.toString(subCategory), Integer.toString(agents), 
+									Integer.toString(iterations) };
+				RMPSO.main(args1);
+				MRMPSO.main(args1);
+//				SAEA.main(args1);
+				GAMR.main(args1);
+//				PWOA.main(args1);
+			}	
+			subCategory = subCategory+50;
+		}
+			
+		category = "HCSP";
+		subCategory = 100;
+
+		// c_lohi = 100
+		// i_lohi = 200
+		// i_hilo = 300
+		// c_hilo = 400
+		while (subCategory < 401) 
+		{
+			for (int i = 0; i < 10; i++) 
+			{
+				String[] args2 = { category, Integer.toString(subCategory), Integer.toString(agents), 
+									Integer.toString(iterations)};
+				RMPSO.main(args2);
+				MRMPSO.main(args2);
+//				SAEA.main(args2);
+				GAMR.main(args2);
+//				PWOA.main(args2);
+			}	
+			subCategory = subCategory+100;
+		}
+	}
+
+}

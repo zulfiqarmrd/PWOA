@@ -1,0 +1,89 @@
+/*
+ * Title:        CloudSim Toolkit
+ * Description:  CloudSim (Cloud Simulation) Toolkit for Modeling and Simulation
+ *               of Clouds
+ * Licence:      GPL - http://www.gnu.org/copyleft/gpl.html
+ *
+ * Copyright (c) 2009, The University of Melbourne, Australia
+ */
+
+
+package org.cloudbus.cloudsim.examples.Algorithms;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import org.cloudbus.cloudsim.Cloudlet;
+import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
+import org.cloudbus.cloudsim.Datacenter;
+import org.cloudbus.cloudsim.DatacenterBroker;
+import org.cloudbus.cloudsim.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.Host;
+import org.cloudbus.cloudsim.Log;
+import org.cloudbus.cloudsim.Pe;
+import org.cloudbus.cloudsim.Storage;
+import org.cloudbus.cloudsim.UtilizationModel;
+import org.cloudbus.cloudsim.UtilizationModelFull;
+import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.VmAllocationPolicySimple;
+import org.cloudbus.cloudsim.VmSchedulerTimeShared;
+import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.SimEntity;
+import org.cloudbus.cloudsim.core.SimEvent;
+import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
+
+public class Run_Convergence 
+{
+	
+	public static void main(String[] args) 
+	{
+		String category = "GoCJ";
+		int subCategory = 500;
+		int agents = 60;
+		int iterations = 20;
+
+		while (iterations < 501) 
+		{
+			for (int i = 0; i < 10; i++) 
+			{
+				String[] arguments1 = { category, Integer.toString(subCategory), Integer.toString(agents), Integer.toString(iterations)  };
+				RMPSO.main(arguments1);
+				MRMPSO.main(arguments1);
+				SAEA.main(arguments1);
+				GAMR.main(arguments1);
+				PWOA.main(arguments1);
+				System.out.println("Done!");
+			}	
+			
+			if (iterations < 100) 
+			{
+				iterations = iterations+33;
+			}
+			else 
+			{
+				iterations = iterations+127;
+			}
+		}
+
+//		while (agents < 101) 
+//		{
+//			for (int i = 0; i < 10; i++) 
+//			{
+//				String[] arguments2 = { category, Integer.toString(subCategory), Integer.toString(agents), Integer.toString(iterations) };
+//				RMPSO.main(arguments2);
+//				MRMPSO.main(arguments2);
+//				SAEA.main(arguments2);
+//				GAMR.main(arguments2);
+//				PWOA.main(arguments2);
+//				System.out.println("Done!");
+//			}	
+//			
+//				agents = agents+10;
+//		}
+	}
+}

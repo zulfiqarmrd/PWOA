@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
+		<item key="wrap" value="true"/>
+		<item key="casesensitive" value="true"/>
+		<item key="wholeword" value="true"/>
+		<item key="incremental" value="false"/>
+		<item key="isRegEx" value="false"/>
+		<item key="selection" value=""/>
+		<list key="findhistory">
+			<item value="NASA"/>
+			<item value="a"/>
+			<item value="CloudletList"/>
+			<item value="PWOA"/>
+			<item value="-"/>
+			<item value="10"/>
+			<item value="vm"/>
+			<item value="int bw = 10000;"/>
+			<item value="gbFMap"/>
+			<item value="bindCloudletToVm"/>
+			<item value="cloudletLength"/>
+			<item value="length"/>
+			<item value="getCloudletTotalLength();"/>
+			<item value="the execution"/>
+			<item value="id-1"/>
+		</list>
+		<list key="replacehistory">
+			<item value="PEWOA"/>
+			<item value="v"/>
+			<item value="executionTime"/>
+			<item value=""/>
+			<item value="agents"/>
+			<item value="PWOA2"/>
+			<item value="iterations"/>
+			<item value="noOfParticles"/>
+			<item value="noOfSubPopulations"/>
+			<item value="400"/>
+			<item value="300"/>
+			<item value="200"/>
+			<item value="100"/>
+			<item value="PWOA"/>
+			<item value="noOfRuns"/>
+		</list>
+	</section>
+	<section name="org.eclipse.ui.texteditor.FindReplaceDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="818"/>
+		<item key="DIALOG_Y_ORIGIN" value="6"/>
+		<item key="DIALOG_WIDTH" value="468"/>
+		<item key="DIALOG_HEIGHT" value="680"/>
+		<item key="DIALOG_FONT_NAME" value="1|Segoe UI|9.0|0|WINDOWS|1|-36|0|0|0|400|0|0|0|1|0|0|0|0|Segoe UI"/>
+	</section>
+	<section name="org.eclipse.ui.texteditor.GotoLineAction$GotoLineDialog_dialogBounds">
+		<item key="DIALOG_X_ORIGIN" value="404"/>
+		<item key="DIALOG_Y_ORIGIN" value="219"/>
+	</section>
+</section>

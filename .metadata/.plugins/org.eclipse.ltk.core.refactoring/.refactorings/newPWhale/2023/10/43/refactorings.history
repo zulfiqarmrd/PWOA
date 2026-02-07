@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;org.cloudbus.cloudsim.examples.Algorithms.Run_Genuine&apos; to &apos;Run_Best&apos;&#x0D;&#x0A;- Original project: &apos;newPWhale&apos;&#x0D;&#x0A;- Original element: &apos;org.cloudbus.cloudsim.examples.Algorithms.Run_Genuine&apos;&#x0D;&#x0A;- Renamed element: &apos;org.cloudbus.cloudsim.examples.Algorithms.Run_Best&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;Run_Genuine&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/examples&lt;org.cloudbus.cloudsim.examples.Algorithms{Run_Genuine.java[Run_Genuine" matchStrategy="1" name="Run_Best" qualified="false" references="true" similarDeclarations="false" stamp="1697947076940" textual="false" version="1.0"/>
+</session>

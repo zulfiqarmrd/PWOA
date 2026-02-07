@@ -1,0 +1,248 @@
+package org.cloudbus.cloudsim.examples.Algorithms;
+import org.apache.batik.svggen.SVGGraphics2D;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.batik.dom.GenericDOMImplementation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
+import java.awt.geom.Rectangle2D;
+import javax.swing.JFrame;
+import java.io.IOException;
+import org.jfree.chart.plot.CategoryPlot;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.awt.BasicStroke;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import org.jfree.chart.*;
+import org.jfree.chart.axis.*;
+
+public class Graphs_HCSP_Algorithms extends JFrame
+{
+
+	public static void main(String[] args) 
+	 {
+		 DefaultCategoryDataset makespanDataSet = new DefaultCategoryDataset();
+		 DefaultCategoryDataset ARUDataSet = new DefaultCategoryDataset();
+		 DefaultCategoryDataset aRTDataSet = new DefaultCategoryDataset();
+		 DefaultCategoryDataset throughputDataSet = new DefaultCategoryDataset();
+		 DefaultCategoryDataset executionTimeDataSet = new DefaultCategoryDataset();
+	 
+		 String filePathPSO = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/AdPSO/HCSP/Output.txt"; 
+		 String filePathWOA = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/WOA/HCSP/Output.txt"; 
+		 String filePathRMPSO = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/RMPSO/HCSP/Output.txt"; 
+		 String filePathMRMPSO = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/MRMPSO/HCSP/Output.txt"; 
+		 String filePathSAEA = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/SAEA/HCSP/Output.txt"; 
+		 String filePathPWOA = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/PWOA/HCSP/Output.txt"; 
+		 
+		 String[] datasets = {"c_lohi", "i_lohi", "i_hilo", "c_hilo"};
+		try  
+		{
+			BufferedReader brP = new BufferedReader(new FileReader(filePathPSO));
+			BufferedReader brW = new BufferedReader(new FileReader(filePathWOA));
+			BufferedReader brRM = new BufferedReader(new FileReader(filePathRMPSO));
+			BufferedReader brMRM = new BufferedReader(new FileReader(filePathMRMPSO));
+			BufferedReader brS = new BufferedReader(new FileReader(filePathSAEA));
+			BufferedReader brPW = new BufferedReader(new FileReader(filePathPWOA));
+
+			for (int i = 0; i < 4; i++)
+			{
+				String dataset = datasets[i];
+
+				String lineP;
+				String lineW;
+				String lineRM;
+				String lineMRM;
+				String lineS;
+				String linePW;
+
+				lineP = brP.readLine();
+				lineW = brW.readLine();
+				lineRM = brRM.readLine();
+				lineMRM = brMRM.readLine();
+				lineS = brS.readLine();
+				linePW = brPW.readLine();
+
+				String[] valuesP = lineP.split(",");
+	        	String[] valuesW = lineW.split(",");
+	        	String[] valuesRM = lineRM.split(",");
+	        	String[] valuesMRM = lineMRM.split(",");
+	        	String[] valuesS = lineS.split(",");
+	            String[] valuesPW = linePW.split(",");
+
+	            Double makespanP = Double.parseDouble(valuesP[0]);
+	            Double makespanW = Double.parseDouble(valuesW[0]);
+	            Double makespanRM = Double.parseDouble(valuesRM[0]);
+	            Double makespanMRM = Double.parseDouble(valuesMRM[0]);
+	            Double makespanS = Double.parseDouble(valuesS[0]);
+	            Double makespanPW = Double.parseDouble(valuesPW[0]);
+
+	            Double ARUP = Double.parseDouble(valuesP[1]);
+	            Double ARUW = Double.parseDouble(valuesW[1]);
+	            Double ARURM = Double.parseDouble(valuesRM[1]);
+	            Double ARUMRM = Double.parseDouble(valuesMRM[1]);
+	            Double ARUS = Double.parseDouble(valuesS[1]);
+	            Double ARUPW = Double.parseDouble(valuesPW[1]);
+
+	            Double aRTP = Double.parseDouble(valuesP[2]);
+	            Double aRTW = Double.parseDouble(valuesW[2]);
+	            Double aRTRM = Double.parseDouble(valuesRM[2]);
+	            Double aRTMRM = Double.parseDouble(valuesMRM[2]);
+	            Double aRTS = Double.parseDouble(valuesS[2]);
+	            Double aRTPW = Double.parseDouble(valuesPW[2]);
+
+	            Double throughputP = Double.parseDouble(valuesP[3]);
+	            Double throughputW = Double.parseDouble(valuesW[3]);
+	            Double throughputRM = Double.parseDouble(valuesRM[3]);
+	            Double throughputMRM = Double.parseDouble(valuesMRM[3]);
+	            Double throughputS = Double.parseDouble(valuesS[3]);
+	            Double throughputPW = Double.parseDouble(valuesPW[3]);
+	            
+	            Double executionTimeP = Double.parseDouble(valuesP[4]);
+	            Double executionTimeW = Double.parseDouble(valuesW[4]);
+	            Double executionTimeRM = Double.parseDouble(valuesRM[4]);
+	            Double executionTimeMRM = Double.parseDouble(valuesMRM[4]);
+	            Double executionTimeS = Double.parseDouble(valuesS[4]);
+	            Double executionTimePW = Double.parseDouble(valuesPW[4]);
+
+	            makespanDataSet.addValue(makespanP, "PSO", dataset);
+	            makespanDataSet.addValue(makespanW, "WOA", dataset);
+	            makespanDataSet.addValue(makespanRM, "RMPSO", dataset);
+	            makespanDataSet.addValue(makespanMRM, "MRMPSO", dataset);
+	            makespanDataSet.addValue(makespanS, "SAEA", dataset);
+	            makespanDataSet.addValue(makespanPW, "PWOA", dataset);
+	            
+	            ARUDataSet.addValue(ARUP, "PSO", dataset );
+	            ARUDataSet.addValue(ARUW, "WOA", dataset );
+	            ARUDataSet.addValue(ARURM, "RMPSO", dataset );
+	            ARUDataSet.addValue(ARUMRM, "MRMPSO", dataset );
+	            ARUDataSet.addValue(ARUS, "SAEA", dataset );
+	            ARUDataSet.addValue(ARUPW, "PWOA", dataset);
+
+	            aRTDataSet.addValue(aRTP, "PSO", dataset );
+	            aRTDataSet.addValue(aRTW, "WOA", dataset );
+	            aRTDataSet.addValue(aRTRM, "RMPSO", dataset );
+	            aRTDataSet.addValue(aRTMRM, "MRMPSO", dataset );
+	            aRTDataSet.addValue(aRTS, "SAEA", dataset );
+	            aRTDataSet.addValue(aRTPW, "PWOA", dataset);
+
+	            throughputDataSet.addValue(throughputP, "PSO", dataset );
+	            throughputDataSet.addValue(throughputW, "WOA", dataset );
+	            throughputDataSet.addValue(throughputRM, "RMPSO", dataset );
+	            throughputDataSet.addValue(throughputMRM, "MRMPSO", dataset );
+	            throughputDataSet.addValue(throughputS, "SAEA", dataset );
+	            throughputDataSet.addValue(throughputPW, "PWOA", dataset);
+
+	            executionTimeDataSet.addValue(executionTimeP, "PSO", dataset );
+	            executionTimeDataSet.addValue(executionTimeW, "WOA", dataset );
+	            executionTimeDataSet.addValue(executionTimeRM, "RMPSO", dataset );
+	            executionTimeDataSet.addValue(executionTimeMRM, "MRMPSO", dataset );
+	            executionTimeDataSet.addValue(executionTimeS, "SAEA", dataset );
+	            executionTimeDataSet.addValue(executionTimePW, "PWOA", dataset);
+}
+			
+			brP.close();
+	        brW.close();
+	        brRM.close();
+	        brMRM.close();
+	        brS.close();
+	        brPW.close();
+		
+		}catch(IOException e)
+    	{
+    		System.out.println("An error occurred while writing to the file: " + e.getMessage());
+    	}
+	
+	 JFreeChart chart0 = ChartFactory.createBarChart("HPSC", "Categories of Tasks", "makespan (millseconds)", makespanDataSet);
+	 JFreeChart chart1 = ChartFactory.createBarChart("HPSC", "Categories of Tasks", "Resource Utilization (% age)", ARUDataSet);
+	 JFreeChart chart2 = ChartFactory.createBarChart("HPSC", "Categories of Tasks", "Response Time (millseconds)", aRTDataSet);
+	 JFreeChart chart3 = ChartFactory.createBarChart("HPSC", "Categories of Tasks", "Throughput (tasks/millsecond)", throughputDataSet);
+	 JFreeChart chart4 = ChartFactory.createBarChart("HPSC", "Categories of Tasks", "Execution Time (millseconds)", executionTimeDataSet);
+
+	 printCharts(chart0, "makespan");
+	 printCharts(chart1, "Resource Utilization");
+	 printCharts(chart2, "Response Time");
+	 printCharts(chart3, "Throughput");
+	 printCharts(chart4, "Execution Time");
+	 } 
+
+	 private static void printCharts(JFreeChart chart, String metric)
+		{
+		 CategoryPlot plot = (CategoryPlot) chart.getPlot();
+		 plot.setBackgroundPaint(new Color(255, 255, 255)); // Set background color
+		 
+		 ValueAxis yAxis = plot.getRangeAxis();
+		 plot.setRangeAxis(yAxis);
+	     Font fontY = new Font("caliberi", 0, 25); // Replace with your desired font and size
+	     yAxis.setTickLabelFont(fontY);
+
+		 BarRenderer renderer = (BarRenderer) plot.getRenderer();
+		 renderer.setSeriesPaint(0, Color.red); // Set color for series 1
+		 renderer.setSeriesPaint(1, Color.green); // Set color for series 2
+		 renderer.setSeriesPaint(2, Color.gray); // Set color for series 3
+		 renderer.setSeriesPaint(3, Color.DARK_GRAY); // Set color for series 4
+		 renderer.setSeriesPaint(4, Color.pink); // Set color for series 5
+		 renderer.setSeriesPaint(5, Color.blue); // Set color for series 6
+		 renderer.setDefaultItemLabelsVisible(true); // Show data points as shapes
+
+		 
+		 /*Increasing the font size */
+		// Increase the font size for the axis labels
+		 Font axisLabelFont = plot.getDomainAxis().getLabelFont();
+		 Font newAxisLabelFont = axisLabelFont.deriveFont(axisLabelFont.getSize2D() * 1.5f);
+		 plot.getDomainAxis().setLabelFont(newAxisLabelFont);
+
+		 // Increase the font size for the tick labels on the domain axis
+		 Font tickLabelFont = plot.getDomainAxis().getTickLabelFont();
+		 Font newTickLabelFont = tickLabelFont.deriveFont(tickLabelFont.getSize2D() * 1.5f);
+		 plot.getDomainAxis().setTickLabelFont(newTickLabelFont);
+
+	     Font newAxisLabelFont2 = new Font("calibri", 0, 25);;
+	     yAxis.setLabelFont(newAxisLabelFont2); // Set the font for the y-axis label
+		 
+	     CategoryAxis xAxis = (CategoryAxis) plot.getDomainAxis();
+	     Font fontX = new Font("calibri", 0, 25);
+	     xAxis.setLabelFont(fontX); // Set the font for tick labels on the x-axis	     
+	     
+		 // Increase the font size for the legend
+		 Font font = new Font("caliberi", 0, 25);
+		 chart.getLegend().setItemFont(font);
+
+		 ChartPanel chartPanel = new ChartPanel(chart);
+		 chartPanel.setPreferredSize(new Dimension(1700, 1000));
+		 
+		 JFrame frame = new JFrame(metric);
+	     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	     frame.getContentPane().add(chartPanel, BorderLayout.CENTER);
+	     frame.pack();
+//	     frame.setVisible(true);
+	 
+	     try  {
+
+             DOMImplementation mySVGDOM= GenericDOMImplementation.getDOMImplementation();
+             /* create Document object */
+             Document document = mySVGDOM.createDocument(null, "svg", null);
+             /* Create SVG Generator */
+             SVGGraphics2D my_svg_generator = new SVGGraphics2D(document);
+             /* Render chart as SVG 2D Graphics object */
+             chart.draw(my_svg_generator, new Rectangle2D.Double(0, 0, 1200, 500), null);
+             /* Write output to file */
+             my_svg_generator.stream(metric+".svg");            
+
+	     } 
+	     catch (IOException e) 
+	     {
+	         e.printStackTrace();
+	     }
+		}
+}
+	 

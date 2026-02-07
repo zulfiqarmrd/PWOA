@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<libraryInfos>
+    <libraryInfo home="C:\Users\Zulfiqar\.p2\pool\plugins\org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_19.0.2.v20230129-1123\jre" version="19.0.2"/>
+    <libraryInfo home="D:\CloudSim-3\jre-8u202-windows-x64" version="1.8.0_202">
+        <bootpath>
+            <entry path="D:\CloudSim-3\jre-8u202-windows-x64\lib\resources.jar"/>
+            <entry path="D:\CloudSim-3\jre-8u202-windows-x64\lib\rt.jar"/>
+            <entry path="D:\CloudSim-3\jre-8u202-windows-x64\lib\sunrsasign.jar"/>
+            <entry path="D:\CloudSim-3\jre-8u202-windows-x64\lib\jsse.jar"/>
+            <entry path="D:\CloudSim-3\jre-8u202-windows-x64\lib\jce.jar"/>
+            <entry path="D:\CloudSim-3\jre-8u202-windows-x64\lib\charsets.jar"/>
+            <entry path="D:\CloudSim-3\jre-8u202-windows-x64\lib\jfr.jar"/>
+            <entry path="D:\CloudSim-3\jre-8u202-windows-x64\classes"/>
+        </bootpath>
+        <extensionDirs>
+            <entry path="D:\CloudSim-3\jre-8u202-windows-x64\lib\ext"/>
+            <entry path="C:\WINDOWS\Sun\Java\lib\ext"/>
+        </extensionDirs>
+        <endorsedDirs>
+            <entry path="D:\CloudSim-3\jre-8u202-windows-x64\lib\endorsed"/>
+        </endorsedDirs>
+    </libraryInfo>
+    <libraryInfo home="C:\Users\Zulfiqar\.p2\pool\plugins\org.eclipse.justj.openjdk.hotspot.jre.full.win32.x86_64_19.0.2.v20230129-1123" version="19.0.2"/>
+</libraryInfos>

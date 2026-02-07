@@ -1,0 +1,105 @@
+/*
+ * Title:        CloudSim Toolkit
+ * Description:  CloudSim (Cloud Simulation) Toolkit for Modeling and Simulation
+ *               of Clouds
+ * Licence:      GPL - http://www.gnu.org/copyleft/gpl.html
+ *
+ * Copyright (c) 2009, The University of Melbourne, Australia
+ */
+
+
+package org.cloudbus.cloudsim.examples.Algorithms;
+
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import org.cloudbus.cloudsim.Cloudlet;
+import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
+import org.cloudbus.cloudsim.Datacenter;
+import org.cloudbus.cloudsim.DatacenterBroker;
+import org.cloudbus.cloudsim.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.Host;
+import org.cloudbus.cloudsim.Log;
+import org.cloudbus.cloudsim.Pe;
+import org.cloudbus.cloudsim.Storage;
+import org.cloudbus.cloudsim.UtilizationModel;
+import org.cloudbus.cloudsim.UtilizationModelFull;
+import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.VmAllocationPolicySimple;
+import org.cloudbus.cloudsim.VmSchedulerTimeShared;
+import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.SimEntity;
+import org.cloudbus.cloudsim.core.SimEvent;
+import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
+
+public class Run_Best 
+{
+	
+	public static void main(String[] args) 
+	{
+		String category = "GoCJ";
+		int subCategory = 100;
+
+		while (subCategory < 1001) 
+		{
+			for (int i = 0; i < 10; i++) 
+			{
+//				String[] args1RMPSO = { category, Integer.toString(subCategory), Integer.toString(60), Integer.toString(500) };
+//				RMPSO.main(args1RMPSO);
+//				
+//				String[] args1MRMPSO = { category, Integer.toString(subCategory), Integer.toString(70), Integer.toString(500) };
+//				MRMPSO.main(args1MRMPSO);
+//				
+//				String[] args1SAEA = { category, Integer.toString(subCategory), Integer.toString(30), Integer.toString(20) };
+//				SAEA.main(args1SAEA);
+				
+				String[] args1GAMR = { category, Integer.toString(subCategory), Integer.toString(70), Integer.toString(373) };
+				GAMR.main(args1GAMR);
+				
+//				String[] args1PWOA = { category, Integer.toString(subCategory), Integer.toString(90), Integer.toString(500) };
+//				PWOA.main(args1PWOA);
+			}	
+			subCategory = subCategory+50;
+		}
+			
+		category = "HCSP";
+		subCategory = 100;
+
+		// c_lohi = 100
+		// i_lohi = 200
+		// i_hilo = 300
+		// c_hilo = 400
+		while (subCategory < 401) 
+		{
+			for (int i = 0; i < 10; i++) 
+			{
+				String[] args2RMPSO = { category, Integer.toString(subCategory), Integer.toString(60), Integer.toString(500) };
+				RMPSO.main(args2RMPSO);
+				
+				String[] args2MRMPSO = { category, Integer.toString(subCategory), Integer.toString(70), Integer.toString(500) };
+				MRMPSO.main(args2MRMPSO);
+				
+				String[] args2SAEA = { category, Integer.toString(subCategory), Integer.toString(30), Integer.toString(20) };
+				SAEA.main(args2SAEA);
+				
+				String[] args2GAMR = { category, Integer.toString(subCategory), Integer.toString(70), Integer.toString(373) };
+				GAMR.main(args2GAMR);
+				
+				String[] args2PWOA = { category, Integer.toString(subCategory), Integer.toString(90), Integer.toString(500) };
+				PWOA.main(args2PWOA);
+			}	
+			subCategory = subCategory+100;
+		}
+
+
+//		Final_Report_GoCJ.main(args);
+//		Final_Report_HCSP.main(args);
+
+	}
+
+}

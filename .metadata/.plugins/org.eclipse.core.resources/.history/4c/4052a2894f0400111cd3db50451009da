@@ -1,0 +1,178 @@
+/*
+ * Title:        CloudSim Toolkit
+ * Description:  CloudSim (Cloud Simulation) Toolkit for Modeling and Simulation
+ *               of Clouds
+ * Licence:      GPL - http://www.gnu.org/copyleft/gpl.html
+ *
+ * Copyright (c) 2009, The University of Melbourne, Australia
+ */
+
+
+package org.cloudbus.cloudsim.examples.Algorithms;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
+import org.cloudbus.cloudsim.Cloudlet;
+import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
+import org.cloudbus.cloudsim.Datacenter;
+import org.cloudbus.cloudsim.DatacenterBroker;
+import org.cloudbus.cloudsim.DatacenterCharacteristics;
+import org.cloudbus.cloudsim.Host;
+import org.cloudbus.cloudsim.Log;
+import org.cloudbus.cloudsim.Pe;
+import org.cloudbus.cloudsim.Storage;
+import org.cloudbus.cloudsim.UtilizationModel;
+import org.cloudbus.cloudsim.UtilizationModelFull;
+import org.cloudbus.cloudsim.Vm;
+import org.cloudbus.cloudsim.VmAllocationPolicySimple;
+import org.cloudbus.cloudsim.VmSchedulerTimeShared;
+import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.core.SimEntity;
+import org.cloudbus.cloudsim.core.SimEvent;
+import org.cloudbus.cloudsim.provisioners.BwProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.PeProvisionerSimple;
+import org.cloudbus.cloudsim.provisioners.RamProvisionerSimple;
+// This code has two broad section 1 each for WOA and PSO
+public class Final_Report_HCSP 
+{
+	
+	public static void main(String[] args) 
+	{
+		computeAverage("RMPSO");
+		computeAverage("MRMPSO");
+		computeAverage("SAEA");
+		computeAverage("GAMR");
+		computeAverage("PWOA");
+
+//		Graphs_HCSP_Algorithms.main(args);
+	}	
+	
+	public static void computeAverage(String algo) 
+	{
+		String read_100 = null;
+		String read_200 = null;
+		String read_300 = null;
+		String read_400 = null;
+		String write = null;
+		
+			
+		if(algo == "RMPSO") 
+		{
+			read_100 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/RMPSO/HCSP/output_100.txt"; 
+			read_200 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/RMPSO/HCSP/output_200.txt"; 
+			read_300 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/RMPSO/HCSP/output_300.txt"; 
+			read_400 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/RMPSO/HCSP/output_400.txt"; 
+
+			write = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/RMPSO/HCSP/Output.txt";
+		}
+		else if(algo == "MRMPSO") 
+		{
+			read_100 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/MRMPSO/HCSP/output_100.txt"; 
+			read_200 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/MRMPSO/HCSP/output_200.txt"; 
+			read_300 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/MRMPSO/HCSP/output_300.txt"; 
+			read_400 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/MRMPSO/HCSP/output_400.txt"; 
+
+			write = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/MRMPSO/HCSP/Output.txt";
+		}
+		else if(algo == "SAEA") 
+		{
+			read_100 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/SAEA/HCSP/output_100.txt"; 
+			read_200 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/SAEA/HCSP/output_200.txt"; 
+			read_300 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/SAEA/HCSP/output_300.txt"; 
+			read_400 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/SAEA/HCSP/output_400.txt"; 
+
+			write = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/SAEA/HCSP/Output.txt";
+		}
+		else if(algo == "GAMR") 
+		{
+			read_100 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/HCSP/output_100.txt"; 
+			read_200 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/HCSP/output_200.txt"; 
+			read_300 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/HCSP/output_300.txt"; 
+			read_400 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/HCSP/output_400.txt"; 
+
+			write = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/GAMR/HCSP/Output.txt";
+		}
+		else if(algo == "PWOA") 
+		{
+			read_100 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/PWOA/HCSP/output_100.txt"; 
+			read_200 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/PWOA/HCSP/output_200.txt"; 
+			read_300 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/PWOA/HCSP/output_300.txt"; 
+			read_400 = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/PWOA/HCSP/output_400.txt"; 
+
+			write = "D:/CloudSim-3/Eclipse/newPWhale/newPWhale/examples/reports/PWOA/HCSP/Output.txt";
+		}
+		average(read_100, write); 
+		average(read_200, write); 
+		average(read_300, write); 
+		average(read_400, write); 
+
+	}			
+	
+	public static void average(String read, String write) 
+	{
+				
+		String fileToRead = read; 
+	
+		try (BufferedReader br = new BufferedReader(new FileReader(fileToRead))) 
+		{
+	        String line;
+	        double avgMakespan = 0.0;
+	        double avgARU = 0.0;
+	        double avgaRT = 0.0;
+	        double avgthroughput = 0.0;
+	        double avgExecutionTime = 0.0;
+	        
+	        while ((line = br.readLine()) != null) 
+	        {
+	            // Split the line into individual values using the comma as the delimiter
+	            String[] values = line.split(",");
+
+	            // Process the values as needed
+	            Double makespan = Double.parseDouble(values[0]);
+	            Double ARU = Double.parseDouble(values[1]);
+	            Double aRT = Double.parseDouble(values[2]);
+	            Double throughput = Double.parseDouble(values[3]);
+	            Double executionTime = Double.parseDouble(values[4]);
+
+	            avgMakespan = avgMakespan + makespan;
+	            avgARU = avgARU + ARU;
+	            avgaRT = avgaRT + aRT;
+	            avgthroughput = avgthroughput + throughput;
+	            avgExecutionTime = avgExecutionTime + executionTime;
+	        }
+
+//		        System.out.println("The results are for length:"+tasks);
+	        System.out.println("Average makespan: " + avgMakespan/10);
+	        System.out.println("Average ARU: " + avgARU/10);
+	        System.out.println("Average aRT: " + avgaRT/10);
+	        System.out.println("Average throughput: " + avgthroughput/10);
+	        System.out.println("Average throughput: " + avgExecutionTime/10+"\n");
+
+			try
+	    	{	// The first row contains the result for 100 tasks while the last row represents 1000 tasks average.
+	    		String fileToWrite = write;
+	    		FileWriter fWriter = new FileWriter(fileToWrite,true);
+	    		BufferedWriter bWriter = new BufferedWriter(fWriter);
+	    		bWriter.write(avgMakespan/10 + ", "+ avgARU/10+ ", "+ avgaRT/10+", "+ avgthroughput/10 +", "+ avgExecutionTime/10 + "\n");
+	    		bWriter.close();
+	    		fWriter.close();
+	    	}
+	    	catch(IOException e)
+	    	{
+	    		System.out.println("An error occurred while writing to the file: " + e.getMessage());
+	    	}
+
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+}
